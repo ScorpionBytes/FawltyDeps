@@ -192,6 +192,19 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         ),
     )
     parser.add_argument(
+        "--exclude-from",
+        nargs="+",
+        action="union",
+        type=Path,
+        metavar="PATH",
+        help=(
+            "Files containing exclude patterns to apply when looking for code"
+            " (imports), dependency declarations and/or Python environments."
+            " Defaults to '.ignore', `.gitignore`, and `.git/info/exclude`"
+            " under the current directory."
+        ),
+    )
+    parser.add_argument(
         "--install-deps",
         dest="install_deps",
         action="store_true",
