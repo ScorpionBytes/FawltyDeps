@@ -8,7 +8,7 @@ from fawltydeps.extract_declared_dependencies import validate_deps_source
 from fawltydeps.extract_imports import validate_code_source
 from fawltydeps.gitignore_parser import RuleError as ExcludeRuleError
 from fawltydeps.packages import validate_pyenv_source
-from fawltydeps.settings import Settings
+from fawltydeps.settings import DEFAULT_EXCLUDE_FROM, Settings
 from fawltydeps.types import (
     CodeSource,
     DepsSource,
@@ -59,10 +59,11 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
     """
 
     logger.debug("find_sources() Looking for sources under:")
-    logger.debug(f"    code:   {settings.code}")
-    logger.debug(f"    deps:   {settings.deps}")
-    logger.debug(f"    pyenvs: {settings.pyenvs}")
-    logger.debug(f"    exclude: {settings.exclude}")
+    logger.debug(f"    code:         {settings.code}")
+    logger.debug(f"    deps:         {settings.deps}")
+    logger.debug(f"    pyenvs:       {settings.pyenvs}")
+    logger.debug(f"    exclude:      {settings.exclude}")
+    logger.debug(f"    exclude_from: {settings.exclude_from}")
 
     requested_paths = {
         path
@@ -92,6 +93,12 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
                 # override the exclusion. However, the user might not be aware
                 # of this overlap, so log a warning:
                 logger.warning(f"{path} is both requested and excluded. Will include.")
+
+    for file_with_exclude_patterns in settings.exclude_from:
+        if file_with_exclude_patterns.is_file():
+            traversal.exclude_from(file_with_exclude_patterns)
+        elif file_with_exclude_patterns not in DEFAULT_EXCLUDE_FROM:
+            logger.warning(f"Cannot find {file_with_exclude_patterns}, skipping")
 
     for path_or_special in settings.code if CodeSource in source_types else []:
         # exceptions raised by validate_code_source() are propagated here

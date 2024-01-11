@@ -100,6 +100,7 @@ def parse_path_or_stdin(arg: str) -> PathOrSpecial:
     return Path(arg)
 
 
+DEFAULT_EXCLUDE_FROM = {Path(".ignore"), Path(".gitignore"), Path(".git/info/exclude")}
 DEFAULT_IGNORE_UNUSED = {
     # Development tools not meant to be imported
     # Formatting Tools
@@ -165,6 +166,7 @@ class Settings(BaseSettings):
     deps_parser_choice: Optional[ParserChoice] = None
     install_deps: bool = False
     exclude: Set[str] = {".*"}
+    exclude_from: Set[Path] = DEFAULT_EXCLUDE_FROM
     verbosity: int = 0
     custom_mapping_file: Set[Path] = set()
 

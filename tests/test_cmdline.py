@@ -17,7 +17,7 @@ import pytest
 from importlib_metadata import files as package_files
 
 from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
-from fawltydeps.settings import DEFAULT_IGNORE_UNUSED
+from fawltydeps.settings import DEFAULT_EXCLUDE_FROM, DEFAULT_IGNORE_UNUSED
 from fawltydeps.types import Location, UnusedDependency
 from fawltydeps.utils import site_packages
 
@@ -30,6 +30,8 @@ from .utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_EXCLUDE_FROM_TOML = [str(path) for path in sorted(DEFAULT_EXCLUDE_FROM)]
 
 
 def make_json_settings_dict(**kwargs):
@@ -48,6 +50,7 @@ def make_json_settings_dict(**kwargs):
         "deps_parser_choice": None,
         "install_deps": False,
         "exclude": [".*"],
+        "exclude_from": DEFAULT_EXCLUDE_FROM_TOML,
         "verbosity": 0,
         "custom_mapping_file": [],
     }
@@ -1192,6 +1195,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 # install_deps = false
                 # exclude = ['.*']
+                # exclude_from = {DEFAULT_EXCLUDE_FROM_TOML}
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1217,6 +1221,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 # install_deps = false
                 # exclude = ['.*']
+                # exclude_from = {DEFAULT_EXCLUDE_FROM_TOML}
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1242,6 +1247,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 # install_deps = false
                 # exclude = ['.*']
+                # exclude_from = {DEFAULT_EXCLUDE_FROM_TOML}
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1267,6 +1273,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 install_deps = true
                 exclude = ['bar/', 'foo*']
+                # exclude_from = {DEFAULT_EXCLUDE_FROM_TOML}
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
