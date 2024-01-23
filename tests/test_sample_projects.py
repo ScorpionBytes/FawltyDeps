@@ -29,7 +29,12 @@ from typing import Iterator, List, Optional
 import pytest
 
 from fawltydeps.main import Analysis
-from fawltydeps.settings import Action, Settings, print_toml_config
+from fawltydeps.settings import (
+    DEFAULT_EXCLUDE_FROM,
+    Action,
+    Settings,
+    print_toml_config,
+)
 from fawltydeps.types import TomlData
 from tests.utils import SAMPLE_PROJECTS_DIR
 
@@ -62,6 +67,7 @@ class Experiment(BaseExperiment):
     pyenvs: Optional[List[str]]
     install_deps: bool
     exclude: List[str]
+    exclude_from: Optional[List[str]]
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> Experiment:
@@ -71,6 +77,7 @@ class Experiment(BaseExperiment):
             pyenvs=data.get("pyenvs", None),
             install_deps=data.get("install_deps", False),
             exclude=data.get("exclude", None),
+            exclude_from=data.get("exclude_from", None),
             **cls._init_args_from_toml(name, data),
         )
 
@@ -87,6 +94,11 @@ class Experiment(BaseExperiment):
             pyenvs=pyenvs,
             install_deps=self.install_deps,
             exclude=Settings().exclude if self.exclude is None else set(self.exclude),
+            exclude_from=(
+                DEFAULT_EXCLUDE_FROM
+                if self.exclude_from is None
+                else {Path(path) for path in self.exclude_from}
+            ),
         )
 
 
